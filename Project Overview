@@ -137,7 +137,8 @@ Note:
 http://<EC2-IP>:5000/
 → Cannot GET /
 → This is NORMAL
-❗ TROUBLESHOOTING
+
+TROUBLESHOOTING
 API not working
 Check:
 docker ps
