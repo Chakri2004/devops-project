@@ -1,0 +1,168 @@
+Project Summary
+This project is a Microservices-based DevOps system deployed using:
+
+Docker (containerization)
+AWS EC2 (cloud deployment)
+Prometheus (monitoring)
+Grafana (visualization)
+GitHub Actions (CI/CD)
+
+Architecture
+
+API Gateway → Port 5000
+User Service → Port 5001
+Product Service → Port 5002
+Prometheus → Port 9090
+Grafana → Port 3000
+
+LOCAL RUN (STEP-BY-STEP)
+
+1️.Run API Gateway
+cd api-gateway
+npm install
+node index.js
+
+2️.Run User Service
+cd user-service
+npm install
+node index.js
+
+3️.Run Product Service
+cd product-service
+npm install
+node index.js
+
+4️.Test Locally
+http://localhost:5000/users
+http://localhost:5000/products
+
+5️.Run Full System (Docker)
+docker-compose up --build
+
+6️.Access
+API → http://localhost:5000
+Grafana → http://localhost:3000
+Prometheus → http://localhost:9090
+
+EC2 DEPLOYMENT (FROM SCRATCH)
+
+1️.Connect to EC2
+ssh -i /path/to/key.pem ubuntu@<EC2-IP>
+
+2️.Install Docker
+sudo apt update
+sudo apt install docker.io -y
+sudo systemctl start docker
+sudo systemctl enable docker
+
+3️.Install Docker Compose
+sudo apt install docker-compose -y
+
+4️.Clone Project
+git clone https://github.com/YOUR_USERNAME/devops-project.git
+cd devops-project
+
+5️.Run Project
+sudo docker-compose up --build -d
+
+6️.Check Containers
+sudo docker ps
+
+7.Access in Browser
+API → http://<EC2-IP>:5000
+Grafana → http://<EC2-IP>:3000
+Prometheus → http://<EC2-IP>:9090
+
+Elastic IP
+API → http://13.62.203.171:5000
+Grafana → http://13.62.203.171:3000
+Prometheus → http://13.62.203.171:9090
+
+AWS SECURITY GROUP
+Allow inbound ports:
+
+3000  (Grafana)
+9090  (Prometheus)
+5000  (API)
+5001  (User)
+5002  (Product)
+
+MONITORING
+Prometheus
+URL → http://<EC2-IP>:9090
+Go to → Targets
+Status → UP
+Grafana
+URL → http://<EC2-IP>:3000
+
+Login:
+admin
+admin
+
+CI/CD WORKFLOW
+Flow
+Push code to GitHub
+GitHub Actions triggers
+SSH into EC2
+Pull latest code
+Restart Docker containers
+
+Commands
+git add .
+git commit -m "update"
+git push
+
+DOCKER COMMANDS (VERY IMPORTANT)
+Start
+sudo docker-compose up --build -d
+
+Stop
+sudo docker-compose down
+
+Restart
+sudo docker-compose down
+sudo docker-compose up --build -d
+
+Logs
+sudo docker-compose logs -f
+
+Check Running Containers
+sudo docker ps
+
+API TESTING
+http://<EC2-IP>:5000/users
+http://<EC2-IP>:5000/products
+
+Note:
+http://<EC2-IP>:5000/
+→ Cannot GET /
+→ This is NORMAL
+❗ TROUBLESHOOTING
+API not working
+Check:
+docker ps
+Check ports open in AWS
+Grafana not opening
+Ensure port 3000 open
+Check container running
+Prometheus targets DOWN
+Check:
+prometheus.yml
+Verify service names
+Port already in use
+netstat -ano | findstr :PORT
+taskkill //PID XXXX //F
+
+FINAL OUTCOME
+This project demonstrates:
+Microservices Architecture
+Docker & Containerization
+Monitoring (Prometheus + Grafana)
+AWS Deployment
+CI/CD Automation
+
+QUICK START (ANYTIME)
+If everything already setup:
+
+cd devops-project
+sudo docker-compose up --build -d
