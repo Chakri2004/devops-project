@@ -1,0 +1,13 @@
+{
+  "name": "product-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "axios": "^1.14.0",
+    "express": "^4.22.1",
+    "prom-client": "^15.1.3"
+  }
+}

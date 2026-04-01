@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: "services"
+    static_configs:
+      - targets:
+          - 'api-gateway:5000'
+          - 'user-service:5001'
+          - 'product-service:5002'
