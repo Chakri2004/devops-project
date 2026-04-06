@@ -1,0 +1,20 @@
+groups:
+  - name: api-alerts
+    rules:
+      - alert: HighRequestRate
+        expr: increase(api_gateway_requests_total[10s]) > 5
+        for: 5s
+        labels:
+          severity: warning
+        annotations:
+          summary: "High API request rate"
+          description: "Too many requests hitting API Gateway"
+
+      - alert: ServiceDown
+        expr: up == 0
+        for: 5s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service Down"
+          description: "One of the services is down"

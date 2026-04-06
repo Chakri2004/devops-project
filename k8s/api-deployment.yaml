@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: devopsproject-api-gateway
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5000
+          env:
+            - name: JWT_SECRET
+              value: mysecret

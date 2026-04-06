@@ -1,13 +1,15 @@
 Project Summary
-This project is a Microservices-based DevOps system deployed using:
+This project is a Microservices-based DevOps system
 
-Docker (containerization)
-AWS EC2 (cloud deployment)
-Prometheus (monitoring)
-Grafana (visualization)
-GitHub Actions (CI/CD)
+Docker(Containerization)
+Kubernetes(Container Orchestration)
+AWS EC2(cloud deployment)
+Prometheus(monitoring)
+Grafana(visualization)
+Redis(Caching)
+GitHub Actions(CI/CD)
 
-Architecture
+## Architecture
 
 API Gateway → Port 5000
 User Service → Port 5001
@@ -15,7 +17,7 @@ Product Service → Port 5002
 Prometheus → Port 9090
 Grafana → Port 3000
 
-LOCAL RUN (STEP-BY-STEP)
+## LOCAL RUN (STEP-BY-STEP)
 
 1️.Run API Gateway
 cd api-gateway
@@ -44,7 +46,7 @@ API → http://localhost:5000
 Grafana → http://localhost:3000
 Prometheus → http://localhost:9090
 
-EC2 DEPLOYMENT (FROM SCRATCH)
+## EC2 DEPLOYMENT
 
 1️.Connect to EC2
 ssh -i /path/to/key.pem ubuntu@<EC2-IP>
@@ -73,46 +75,63 @@ API → http://<EC2-IP>:5000
 Grafana → http://<EC2-IP>:3000
 Prometheus → http://<EC2-IP>:9090
 
-Elastic IP
+## Kubernetes Deployment
+Apply all services:
+kubectl apply -f k8s/
+
+Check pods:
+kubectl get pods
+
+Access API (port-forward):
+kubectl port-forward service/api-gateway 5000:5000
+
+API → http://localhost:5000
+
+## Elastic IP
 API → http://13.62.203.171:5000
 Grafana → http://13.62.203.171:3000
 Prometheus → http://13.62.203.171:9090
 
-AWS SECURITY GROUP
+## AWS SECURITY GROUP
 Allow inbound ports:
+3000 (Grafana)
+9090 (Prometheus)
+5000 (API)
+5001 (User)
+5002 (Product)
 
-3000  (Grafana)
-9090  (Prometheus)
-5000  (API)
-5001  (User)
-5002  (Product)
-
-MONITORING
-Prometheus
+## MONITORING
+## Prometheus
 URL → http://<EC2-IP>:9090
 Go to → Targets
 Status → UP
-Grafana
+
+## Alerting
+Prometheus alert rules configured:
+- HighRequestRate
+- ServiceDown
+Check alerts:
+http://localhost:9090 → Alerts
+
+## Grafana
 URL → http://<EC2-IP>:3000
+Login: admin, admin
+Data Sources - prometheus
+Dashboard - create new panel(visualizing graph,total outcomes) 
 
-Login:
-admin
-admin
+## CI/CD WORKFLOW
+Flow:
+- Push code to GitHub
+- GitHub Actions triggers automatically
+- Builds Docker images
+- (Optional) Deploys to server
 
-CI/CD WORKFLOW
-Flow
-Push code to GitHub
-GitHub Actions triggers
-SSH into EC2
-Pull latest code
-Restart Docker containers
-
-Commands
+Commands:
 git add .
 git commit -m "update"
 git push
 
-DOCKER COMMANDS (VERY IMPORTANT)
+## DOCKER COMMANDS
 Start
 sudo docker-compose up --build -d
 
@@ -138,32 +157,32 @@ http://<EC2-IP>:5000/
 → Cannot GET /
 → This is NORMAL
 
+<<<<<<< HEAD
 TROUBLESHOOTING
+=======
+## TROUBLESHOOTING
+>>>>>>> f0ca50f (Final README update)
 API not working
-Check:
-docker ps
-Check ports open in AWS
-Grafana not opening
-Ensure port 3000 open
-Check container running
-Prometheus targets DOWN
-Check:
-prometheus.yml
-Verify service names
+Check: docker ps
+
 Port already in use
 netstat -ano | findstr :PORT
 taskkill //PID XXXX //F
 
-FINAL OUTCOME
-This project demonstrates:
-Microservices Architecture
-Docker & Containerization
-Monitoring (Prometheus + Grafana)
-AWS Deployment
-CI/CD Automation
+## FINAL OUTCOME(Features)
+- API Gateway
+- JWT Authentication
+- Role-based access control
+- Redis caching
+- Rate limiting
+- Logging(Morgan)
+- Monitoring(Prometheus)
+- Visualization(Grafana)
+- Alerting system
+- Kubernetes deployment
+- CI/CD pipeline(GitHub Actions)
 
-QUICK START (ANYTIME)
+## QUICK START
 If everything already setup:
-
 cd devops-project
 sudo docker-compose up --build -d

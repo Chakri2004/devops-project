@@ -3,11 +3,19 @@ services:
     build: ./user-service
     ports:
       - "5001:5001"
+    depends_on:
+      - mongodb
+    env_file:
+      - .env
 
   product-service:
     build: ./product-service
     ports:
       - "5002:5002"
+    depends_on:
+      - mongodb
+    env_file:
+      - .env  
 
   api-gateway:
     build: ./api-gateway
@@ -16,6 +24,8 @@ services:
     depends_on:
       - user-service
       - product-service
+    env_file:
+      - .env   
 
   prometheus:
     image: prom/prometheus
@@ -23,6 +33,7 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./alerts.yml:/etc/prometheus/alerts.yml
     depends_on:
       - user-service
       - product-service
@@ -35,6 +46,26 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
     restart: always
+<<<<<<< HEAD
   
 volumes:      
   grafana-data:
+=======
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  grafana-data:
+  mongo-data:
+>>>>>>> f0ca50f (Final README update)
