@@ -1,2 +1,24 @@
 node_modules/
 .env
+.env.*
+dist/
+build/
+
+# Logs
+logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+
+# Kubernetes temp files
+*.tmp
+
+# Docker
+*.tar

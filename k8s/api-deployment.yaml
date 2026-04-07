@@ -14,10 +14,31 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: devopsproject-api-gateway
-          imagePullPolicy: Never
+          image: chakri9604/api-gateway:latest
+          imagePullPolicy: Always
+
           ports:
             - containerPort: 5000
+
+          livenessProbe:
+            httpGet:
+              path: /test
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /test
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+
           env:
             - name: JWT_SECRET
-              value: mysecret
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets 
+                  key: JWT_SECRET

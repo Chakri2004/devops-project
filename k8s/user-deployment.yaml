@@ -14,12 +14,33 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: devopsproject-user-service
-          imagePullPolicy: Never
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: 5001
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: 5001
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          image: chakri9604/user-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 5001
           env:
             - name: MONGO_URI
-              value: mongodb://mongodb:27017/userdb
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MONGO_URI
+
             - name: JWT_SECRET
-              value: mysecret
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: JWT_SECRET

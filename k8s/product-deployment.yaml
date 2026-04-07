@@ -14,7 +14,21 @@ spec:
     spec:
       containers:
         - name: product-service
-          image: devopsproject-product-service
-          imagePullPolicy: Never
+          image: chakri9604/product-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 5002
+
+          livenessProbe:
+            httpGet:
+              path: /products
+              port: 5002
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          readinessProbe:
+            httpGet:
+              path: /products
+              port: 5002
+            initialDelaySeconds: 5
+            periodSeconds: 5

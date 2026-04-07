@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
 const client = require("prom-client");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger");
 
 const app = express();
 app.use(express.json());
@@ -15,7 +17,7 @@ app.set('trust proxy', 1);
 const rateLimit = require("express-rate-limit");
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, 
-  max: 3,
+  max: 100,
   message: "Too many requests, please try again later.",
 });
 app.use(limiter);
@@ -49,6 +51,17 @@ const httpRequestCounter = new client.Counter({
 const USER_SERVICE = "http://user-service:5001";
 const PRODUCT_SERVICE = "http://product-service:5002";
 
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: User login
+ *     description: Login user and return JWT token
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+
 // Routes
 app.post("/login", async (req, res) => {
   try {
@@ -59,6 +72,17 @@ app.post("/login", async (req, res) => {
     res.status(500).json({ error: "Login failed" });
   }
 });
+
+/**
+ * @swagger
+ * /register:
+ *   post:
+ *     summary: Register a new user
+ *     description: Creates a new user account
+ *     responses:
+ *       200:
+ *         description: User registered successfully
+ */
 
 app.post("/register", async (req, res) => {
   try {
@@ -71,6 +95,19 @@ app.post("/register", async (req, res) => {
     });
   }
 });
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Get all users
+ *     description: Fetch all users (Admin only)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of users
+ */
 
 app.get("/users", authMiddleware, async (req, res) => {
   try {
@@ -88,6 +125,21 @@ app.get("/users", authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /users/{id}:
+ *   put:
+ *     summary: Update user
+ *     description: Update user details
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: User updated
+ */
+
 // UPDATE USER
 app.put("/users/:id", authMiddleware, async (req, res) => {
   try {
@@ -103,6 +155,21 @@ app.put("/users/:id", authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /users/{id}:
+ *   delete:
+ *     summary: Delete user
+ *     description: Delete a user by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: User deleted
+ */
+
 // DELETE USER
 app.delete("/users/:id", authMiddleware, async (req, res) => {
   try {
@@ -114,6 +181,17 @@ app.delete("/users/:id", authMiddleware, async (req, res) => {
     res.status(500).json({ error: "Delete user failed" });
   }
 });
+
+/**
+ * @swagger
+ * /products:
+ *   get:
+ *     summary: Get all products
+ *     description: Fetch products from product service
+ *     responses:
+ *       200:
+ *         description: List of products
+ */
 
 app.get("/products", authMiddleware, async (req, res) => {
   httpRequestCounter.inc();
@@ -130,6 +208,8 @@ app.get("/metrics", async (req, res) => {
   res.set("Content-Type", client.register.contentType);
   res.end(await client.register.metrics());
 });
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.listen(5000, () => {
   console.log("API Gateway running on port 5000");

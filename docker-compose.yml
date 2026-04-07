@@ -27,6 +27,19 @@ services:
     env_file:
       - .env   
 
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
   prometheus:
     image: prom/prometheus
     ports:
@@ -46,26 +59,7 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
     restart: always
-<<<<<<< HEAD
-  
-volumes:      
-  grafana-data:
-=======
-
-  mongodb:
-    image: mongo
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
-
-  redis:
-    image: redis
-    ports:
-      - "6379:6379"
 
 volumes:
   grafana-data:
   mongo-data:
->>>>>>> f0ca50f (Final README update)

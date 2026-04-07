@@ -6,6 +6,14 @@ const mongoose = require("mongoose");
 const app = express();
 app.use(express.json());
 
+const AWS = require("aws-sdk");
+
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_KEY,
+  region: process.env.AWS_REGION,
+});
+
 // Prometheus metrics
 const collectDefaultMetrics = client.collectDefaultMetrics;
 collectDefaultMetrics();
@@ -43,6 +51,12 @@ app.get("/products", async (req, res) => {
     }
     console.log("Fetching from MongoDB");
     const products = await Product.find();
+    try {
+      await uploadToS3(products);
+      console.log("Uploaded to S3");
+    } catch (err) {
+      console.log("S3 upload failed:", err.message);
+    }
     await redisClient.set("products", JSON.stringify(products), {
       EX: 60,
     });
@@ -59,6 +73,17 @@ app.post("/add-product", async (req, res) => {
   await redisClient.del("products");
   res.json({ message: "Product added", product });
 });
+
+async function uploadToS3(data) {
+  const params = {
+    Bucket: process.env.S3_BUCKET,
+    Key: `products-${Date.now()}.json`,
+    Body: JSON.stringify(data),
+    ContentType: "application/json",
+  };
+
+  return s3.upload(params).promise();
+}
 
 // Metrics endpoint
 app.get("/metrics", async (req, res) => {

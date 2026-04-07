@@ -1,16 +1,22 @@
 Project Summary
 This project is a Microservices-based DevOps system
 
-Docker(Containerization)
-Kubernetes(Container Orchestration)
-AWS EC2(cloud deployment)
-Prometheus(monitoring)
-Grafana(visualization)
-Redis(Caching)
-GitHub Actions(CI/CD)
-
 ## Architecture
+1. Docker (Containerization) → I used Docker to containerize each microservice so the application runs consistently across environments.
+2. Kubernetes (Container Orchestration) → I used Kubernetes to deploy and manage containers, ensuring automatic restarts and scalability.
+3. AWS EC2 (Cloud Deployment) → I deployed the application on AWS EC2 to make it publicly accessible over the internet.
+4. Prometheus (Monitoring) → I used Prometheus to collect metrics like request count and service performance.
+5. Grafana (Visualization) → I used Grafana to visualize Prometheus metrics through dashboards.
+6. Redis (Caching) → I used Redis to cache product data and reduce database load.
+7. Terraform (Infrastructure as Code) → I used Terraform to provision AWS resources like EC2 and security groups automatically.
+8. AWS S3(Storage)
+9. DockerHub (Container Registry) → I pushed Docker images to DockerHub for easy access and deployment in Kubernetes.
+10. Kubernetes Autoscaling (HPA) → I configured HPA to automatically scale pods based on CPU usage.
+11. Elastic IP (Static Public Access) → I used Elastic IP to provide a fixed public IP for accessing my application.
+12. Swagger (API Documentation) → I used Swagger to document and test API endpoints interactively.
+13. GitHub Actions (CI/CD) → I used GitHub Actions to automate build and deployment to EC2 on every code push.
 
+## Services
 API Gateway → Port 5000
 User Service → Port 5001
 Product Service → Port 5002
@@ -37,6 +43,11 @@ node index.js
 4️.Test Locally
 http://localhost:5000/users
 http://localhost:5000/products
+
+## Swagger 
+kubectl get pods
+kubectl port-forward service/api-gateway 5000:5000
+http://localhost:5000/api-docs
 
 5️.Run Full System (Docker)
 docker-compose up --build
@@ -75,6 +86,13 @@ API → http://<EC2-IP>:5000
 Grafana → http://<EC2-IP>:3000
 Prometheus → http://<EC2-IP>:9090
 
+## Swagger → http://<EC2-IP>:5000/api-docs
+
+## Elastic IP
+API → http://13.62.203.171:5000
+Grafana → http://13.62.203.171:3000
+Prometheus → http://13.62.203.171:9090
+
 ## Kubernetes Deployment
 Apply all services:
 kubectl apply -f k8s/
@@ -86,11 +104,6 @@ Access API (port-forward):
 kubectl port-forward service/api-gateway 5000:5000
 
 API → http://localhost:5000
-
-## Elastic IP
-API → http://13.62.203.171:5000
-Grafana → http://13.62.203.171:3000
-Prometheus → http://13.62.203.171:9090
 
 ## AWS SECURITY GROUP
 Allow inbound ports:
@@ -124,7 +137,7 @@ Flow:
 - Push code to GitHub
 - GitHub Actions triggers automatically
 - Builds Docker images
-- (Optional) Deploys to server
+- Deploys automatically to EC2 using SSH and Docker Compose
 
 Commands:
 git add .
@@ -157,11 +170,88 @@ http://<EC2-IP>:5000/
 → Cannot GET /
 → This is NORMAL
 
-<<<<<<< HEAD
-TROUBLESHOOTING
-=======
+## Terraform
+To create folder:
+cd C:\Projects\DevOps Project
+mkdir terraform
+cd terraform
+
+To create files:
+New-Item main.tf
+New-Item provider.tf
+New-Item variables.tf
+New-Item outputs.tf
+New-Item terraform.tfvars
+
+AWS Installation
+https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+aws configure
+AWS Access Key ID
+
+Steps for access Key:
+1.Go to AWS
+2.Search IAM
+3.Create User name:terraform-user
+4.Attach Policies directly
+5.Search AdministratorAccess then Create user
+6.Click created terraform-user
+7.Security credentials then Click Access keys
+8.Create Access Key -> CLI -> Create
+
+Access Key ID: XXXXX
+Secret Access Key: xxxxx 
+Region: ap-south-1
+Output: json
+
+aws sts get-caller-identity -> for details
+
+To change key names go to EC2 -> Key pairs "devops" 
+
+for AMI ID -> Create Instances
+if AMI not working
+1.Go to instance click Actions
+2.Images -> Create Image with any name 
+3.Go to AMIs -> wait till status Available
+
+Run Terraform
+cd "C:\Projects\DevOps Project\terraform"
+1. terraform init
+2. terraform plan
+3. terraform apply
+
+1. init
+Downloads AWS provider
+Prepares working directory
+Initializes .terraform folder
+
+2. terraform plan
+Preview changes before applying
+What it does:
+Reads your .tf files
+Shows what will be created/changed/deleted
+
+3. terraform apply
+Actually create resources
+What it does:
+Calls AWS APIs
+Creates EC2, SG, etc.
+Applies everything
+
+Note -> To destroy and to start clean -> terraform destroy
+
+## S3 Bucket
+1. Create S3 Bucket
+2. Create IAM User
+3. In IAM User -> Security Credentials -> Create Access
+Access Key ID
+Secret Access Key
+AWS_REGION=eu-north-1
+S3_BUCKET=your-bucket-name
+
+http://localhost:5000/products
+
 ## TROUBLESHOOTING
->>>>>>> f0ca50f (Final README update)
 API not working
 Check: docker ps
 
@@ -180,7 +270,23 @@ taskkill //PID XXXX //F
 - Visualization(Grafana)
 - Alerting system
 - Kubernetes deployment
+- Terraform (Infrastructure provisioning)
+- AWS S3 for storing application data/logs
+- Elastic IP for static access
+- Kubernetes Autoscaling (HPA)
+- DockerHub image management
+- CI/CD auto deployment to EC2
+- Swagger API documentation
 - CI/CD pipeline(GitHub Actions)
+
+## Autoscaling(HPA)
+Horizontal Pod Autoscaler configured for product-service
+- Min replicas: 1
+- Max replicas: 5
+- CPU utilization: 50%
+Command:
+kubectl apply -f k8s/product-hpa.yaml
+kubectl get hpa
 
 ## QUICK START
 If everything already setup:
